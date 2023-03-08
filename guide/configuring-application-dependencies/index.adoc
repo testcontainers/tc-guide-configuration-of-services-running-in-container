@@ -1,0 +1,214 @@
+---
+title: "Configuring the application dependencies using Testcontainers"
+date: 2023-03-07T09:39:58+05:30
+draft: false
+description: This guide will explain how to configure the application dependencies for your tests using Testcontainers.
+repo: https://github.com/testcontainers/tc-guide-configuring-application-dependencies
+---
+:toc:
+:toclevels: 2
+:codebase: https://raw.githubusercontent.com/testcontainers/tc-guide-configuring-application-dependencies/main
+
+In this guide you will learn how to
+
+* Initialize containers by copying files into the containers
+* Run supporting commands inside docker containers using `execInContainer()`
+
+== Prerequisites
+* Java 17+
+* Your favorite IDE (Intellij IDEA, Eclipse, NetBeans, VS Code)
+* A Docker environment supported by Testcontainers https://www.testcontainers.org/supported_docker_environment/
+
+== What we are going to achieve in this guide
+We are going to use a Postgres container and create the database schema using SQL scripts
+by copying them into the container. Also, we are going to learn how we can initialize
+https://localstack.cloud/[Localstack] containers to create S3 buckets by executing commands inside the container.
+
+== Getting Started
+Create a new Java project with the Maven or Gradle build tool and add the following dependencies.
+
+[source,xml]
+----
+<properties>
+   <testcontainers.version>1.17.6</testcontainers.version>
+</properties>
+
+<dependencies>
+   <dependency>
+       <groupId>org.postgresql</groupId>
+       <artifactId>postgresql</artifactId>
+       <version>42.5.4</version>
+   </dependency>
+   <dependency>
+       <groupId>ch.qos.logback</groupId>
+       <artifactId>logback-classic</artifactId>
+       <version>1.4.5</version>
+   </dependency>
+   <dependency>
+       <groupId>org.junit.jupiter</groupId>
+       <artifactId>junit-jupiter</artifactId>
+       <version>5.9.2</version>
+       <scope>test</scope>
+   </dependency>
+   <dependency>
+       <groupId>org.testcontainers</groupId>
+       <artifactId>junit-jupiter</artifactId>
+       <scope>test</scope>
+   </dependency>
+   <dependency>
+       <groupId>org.testcontainers</groupId>
+       <artifactId>postgresql</artifactId>
+       <scope>test</scope>
+   </dependency>
+   <dependency>
+       <groupId>org.testcontainers</groupId>
+       <artifactId>localstack</artifactId>
+       <scope>test</scope>
+   </dependency>
+   <dependency>
+       <groupId>software.amazon.awssdk</groupId>
+       <artifactId>s3</artifactId>
+       <version>2.18.16</version>
+       <scope>test</scope>
+   </dependency>
+   <!--
+        Reason for including AWS Java SDK V1:
+        https://github.com/testcontainers/testcontainers-java/issues/1442
+    -->
+   <dependency>
+       <groupId>com.amazonaws</groupId>
+       <artifactId>aws-java-sdk-s3</artifactId>
+       <version>1.11.1000</version>
+       <scope>test</scope>
+   </dependency>
+</dependencies>
+----
+
+== Initializing the container by copying files into container
+
+While using Testcontainers for testing, sometimes we need to initialize the containers with some files
+in a certain location.
+
+For example, while using the Postgres database you may want to create the database schema using
+SQL scripts before running your tests. You can initialize the Postgres docker container by placing
+the SQL scripts in the */docker-entrypoint-initdb.d* directory.
+
+Let us create a database schema creation SQL script *init-db.sql* in *src/test/resources* directory.
+
+[source,sql]
+----
+include::{codebase}/src/test/resources/init-db.sql[]
+----
+
+Now, let’s write a test using Testcontainers postgres module.
+
+[source,java]
+----
+import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
+import org.testcontainers.utility.MountableFile;
+
+@Testcontainers
+class CustomerServiceTest {
+
+   @Container
+   static PostgreSQLContainer<?> postgres =
+           new PostgreSQLContainer<>("postgres:15.2-alpine")
+                .withCopyFileToContainer(
+                    MountableFile.forClasspathResource(
+                        "init-db.sql"), "/docker-entrypoint-initdb.d/"
+                );
+
+   @Test
+   void shouldGetCustomers() {
+      ...
+   }
+}
+----
+
+Here we have used *withCopyFileToContainer(MountableFile mountableFile, String containerPath)* method
+to copy *init-db.sql* file from classpath into container's */docker-entrypoint-initdb.d/* directory.
+Now when you try to run the test, Testcontainers API will spin up a Postgres docker container and
+the sql scripts copied into */docker-entrypoint-initdb.d/* directory will be executed automatically
+before running your tests and hence you can use those tables from your tests.
+
+We can even simplify copying files from classpath by using
+*withClasspathResourceMapping(String resourcePath, String containerPath, BindMode mode)* method as follows:
+
+[source,java]
+----
+static PostgreSQLContainer<?> postgres =
+       new PostgreSQLContainer<>("postgres:15.2-alpine")
+               .withClasspathResourceMapping(
+                       "init-db.sql", "/docker-entrypoint-initdb.d/", BindMode.READ_ONLY
+                );
+----
+
+We can also copy files from any host path using *MountableFile.forHostPath(String path)* as follows:
+
+[source,java]
+----
+static PostgreSQLContainer<?> postgres =
+       new PostgreSQLContainer<>("postgres:15.2-alpine")
+        .withCopyFileToContainer(MountableFile.forHostPath(
+                "/host/path/to/init-db.sql"), "/docker-entrypoint-initdb.d/"
+        );
+----
+
+[WARNING]
+There is another way to mount files into containers by using *withFileSystemBind(String hostPath, String containerPath, BindMode mode)*.
+But using this approach is *NOT RECOMMENDED* and will not work in certain environments.
+
+== Initializing the container by executing commands inside container
+
+Some docker containers provide CLI tools to perform various actions by running commands.
+While using Testcontainers, we may want to perform some initialization tasks before running our tests.
+
+You can use *container.execInContainer(String... command)* API to run any supporting command inside
+a running container.
+
+For example, Testcontainers provides the Localstack module which can be used for testing
+AWS Service integrations. Suppose we are testing the scenario of a file upload into a S3 bucket.
+Here we may want to create the S3 bucket before running the tests.
+
+Let us see how we can use the Localstack module, create a S3 bucket using *execInContainer()* and
+assert that the bucket exists in your test.
+
+[source,java]
+----
+include::{codebase}/src/test/java/com/testcontainers/demo/LocalStackTest.java[lines="22..45,53..70"]
+----
+
+Here we have created a S3 bucket by running the command *"awslocal s3 mb s3://bucketName"*
+using *localStack.execInContainer(...)*. The *awslocal* is a command line tool provided as part of
+Localstack docker image. Similarly, you can run any arbitrary valid command inside the running container.
+
+We can also run any command and get the output and exit code as follows:
+
+
+[source,java]
+----
+Container.ExecResult execResult = localStack.execInContainer("awslocal", "s3", "ls");
+String stdout = execResult.getStdout();
+int exitCode = execResult.getExitCode();
+assertTrue(stdout.contains(bucketName));
+assertEquals(0, exitCode);
+----
+
+[NOTE]
+The *withClasspathResourceMapping(), withCopyFileToContainer(), execInContainer()* are inherited
+from *GenericContainer*. So these methods are available for all Testcontainers modules as well.
+
+== Summary
+We have learned how we can configure the test dependency containers using Testcontainers by copying files
+into containers and executing commands inside the running containers. These container customization features
+help in setting up the containers in a desired state for our test scenarios.
+
+To learn more about Testcontainers visit http://testcontainers.com
+
+== Further Reading
+* https://testcontainers.com/guides/introducing-testcontainers/
+* https://www.testcontainers.org/quickstart/junit_5_quickstart/
+* https://www.testcontainers.org/modules/databases/postgres/
+* https://www.testcontainers.org/modules/localstack/
