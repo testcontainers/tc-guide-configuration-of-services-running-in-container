@@ -27,62 +27,24 @@ https://localstack.cloud/[Localstack] containers to create S3 buckets by executi
 == Getting Started
 Create a new Java project with the Maven or Gradle build tool and add the following dependencies.
 
-[source,xml]
+[source,groovy]
 ----
-<properties>
-   <testcontainers.version>1.17.6</testcontainers.version>
-</properties>
+dependencies {
+   implementation "org.postgresql:postgresql:42.5.0"
+   implementation "ch.qos.logback:logback-classic:1.4.5"
 
-<dependencies>
-   <dependency>
-       <groupId>org.postgresql</groupId>
-       <artifactId>postgresql</artifactId>
-       <version>42.5.4</version>
-   </dependency>
-   <dependency>
-       <groupId>ch.qos.logback</groupId>
-       <artifactId>logback-classic</artifactId>
-       <version>1.4.5</version>
-   </dependency>
-   <dependency>
-       <groupId>org.junit.jupiter</groupId>
-       <artifactId>junit-jupiter</artifactId>
-       <version>5.9.2</version>
-       <scope>test</scope>
-   </dependency>
-   <dependency>
-       <groupId>org.testcontainers</groupId>
-       <artifactId>junit-jupiter</artifactId>
-       <scope>test</scope>
-   </dependency>
-   <dependency>
-       <groupId>org.testcontainers</groupId>
-       <artifactId>postgresql</artifactId>
-       <scope>test</scope>
-   </dependency>
-   <dependency>
-       <groupId>org.testcontainers</groupId>
-       <artifactId>localstack</artifactId>
-       <scope>test</scope>
-   </dependency>
-   <dependency>
-       <groupId>software.amazon.awssdk</groupId>
-       <artifactId>s3</artifactId>
-       <version>2.18.16</version>
-       <scope>test</scope>
-   </dependency>
-   <!--
-        Reason for including AWS Java SDK V1:
-        https://github.com/testcontainers/testcontainers-java/issues/1442
-    -->
-   <dependency>
-       <groupId>com.amazonaws</groupId>
-       <artifactId>aws-java-sdk-s3</artifactId>
-       <version>1.11.1000</version>
-       <scope>test</scope>
-   </dependency>
-</dependencies>
+   testImplementation(platform("org.testcontainers:testcontainers-bom:1.17.6"))
+   testImplementation "software.amazon.awssdk:s3:2.18.16"
+   // Reason for including AWS Java SDK V1: https://github.com/testcontainers/testcontainers-java/issues/1442
+   testImplementation "com.amazonaws:aws-java-sdk-s3:1.11.100"
+   testImplementation "org.junit.jupiter:junit-jupiter"
+   testImplementation "org.testcontainers:junit-jupiter"
+   testImplementation "org.testcontainers:postgresql"
+   testImplementation "org.testcontainers:localstack"
+}
 ----
+
+For complete code please refer to the GitHub repository https://github.com/testcontainers/tc-guide-configuring-application-dependencies
 
 == Initializing the container by copying files into container
 
