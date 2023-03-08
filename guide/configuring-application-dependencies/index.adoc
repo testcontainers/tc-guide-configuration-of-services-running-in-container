@@ -141,7 +141,9 @@ We can even simplify copying files from classpath by using
 static PostgreSQLContainer<?> postgres =
        new PostgreSQLContainer<>("postgres:15.2-alpine")
                .withClasspathResourceMapping(
-                       "init-db.sql", "/docker-entrypoint-initdb.d/", BindMode.READ_ONLY
+                       "init-db.sql",
+                       "/docker-entrypoint-initdb.d/",
+                       BindMode.READ_ONLY
                 );
 ----
 
@@ -151,8 +153,9 @@ We can also copy files from any host path using *MountableFile.forHostPath(Strin
 ----
 static PostgreSQLContainer<?> postgres =
        new PostgreSQLContainer<>("postgres:15.2-alpine")
-        .withCopyFileToContainer(MountableFile.forHostPath(
-                "/host/path/to/init-db.sql"), "/docker-entrypoint-initdb.d/"
+        .withCopyFileToContainer(
+                MountableFile.forHostPath("/host/path/to/init-db.sql"),
+                "/docker-entrypoint-initdb.d/"
         );
 ----
 
@@ -177,7 +180,7 @@ assert that the bucket exists in your test.
 
 [source,java]
 ----
-include::{codebase}/src/test/java/com/testcontainers/demo/LocalStackTest.java[lines="22..45,53..70"]
+include::{codebase}/src/test/java/com/testcontainers/demo/LocalStackTest.java[lines="23..48,55..76"]
 ----
 
 Here we have created a S3 bucket by running the command *"awslocal s3 mb s3://bucketName"*
@@ -186,10 +189,10 @@ Localstack docker image. Similarly, you can run any arbitrary valid command insi
 
 We can also run any command and get the output and exit code as follows:
 
-
 [source,java]
 ----
-Container.ExecResult execResult = localStack.execInContainer("awslocal", "s3", "ls");
+Container.ExecResult execResult =
+    localStack.execInContainer("awslocal", "s3", "ls");
 String stdout = execResult.getStdout();
 int exitCode = execResult.getExitCode();
 assertTrue(stdout.contains(bucketName));

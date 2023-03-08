@@ -18,6 +18,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.testcontainers.containers.localstack.LocalStackContainer.Service.S3;
 
 @Testcontainers
 class LocalStackTest {
@@ -31,18 +32,19 @@ class LocalStackTest {
 
     @Container
     static LocalStackContainer localStack =
-            new LocalStackContainer(DockerImageName.parse("localstack/localstack:1.4"))
-                    .withServices(LocalStackContainer.Service.S3)
-            ;
+            new LocalStackContainer(
+                    DockerImageName.parse("localstack/localstack:1.4")
+            ).withServices(S3);
 
     @BeforeAll
     static void beforeAll() throws IOException, InterruptedException {
-        s3Endpoint = localStack.getEndpointOverride(LocalStackContainer.Service.S3);
+        s3Endpoint = localStack.getEndpointOverride(S3);
         accessKey = localStack.getAccessKey();
         secretKey = localStack.getSecretKey();
         region = localStack.getRegion();
 
-        localStack.execInContainer("awslocal", "s3", "mb", "s3://"+bucketName);
+        localStack.execInContainer(
+                "awslocal", "s3", "mb", "s3://"+bucketName);
 
         org.testcontainers.containers.Container.ExecResult execResult =
                 localStack.execInContainer("awslocal", "s3", "ls");
@@ -54,17 +56,21 @@ class LocalStackTest {
 
     @Test
     void shouldListBuckets() {
+        StaticCredentialsProvider credentialsProvider =
+                StaticCredentialsProvider.create(
+                        AwsBasicCredentials.create(accessKey, secretKey));
         S3Client s3 = S3Client
                 .builder()
                 .endpointOverride(s3Endpoint)
-                .credentialsProvider(
-                        StaticCredentialsProvider.create(
-                                AwsBasicCredentials.create(accessKey, secretKey)
-                        )
-                )
+                .credentialsProvider(credentialsProvider)
                 .region(Region.of(region))
                 .build();
-        List<String> s3Buckets = s3.listBuckets().buckets().stream().map(Bucket::name).toList();
+
+        List<String> s3Buckets =
+                s3.listBuckets()
+                .buckets().stream()
+                .map(Bucket::name).toList();
+
         assertTrue(s3Buckets.contains(bucketName));
     }
 }
