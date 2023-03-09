@@ -1,6 +1,6 @@
-= Configuring the application dependencies using Testcontainers
+= Configuration of services running in a container
 
-This is sample code for [Configuring the application dependencies using Testcontainers](https://testcontainers.com/guides/configuring-application-dependencies) Guide.
+This is sample code for [Configuration of services running in a container](https://testcontainers.com/guides/configuration-of-services-running-in-container) Guide.
 
 == 1. Setup Environment
 Make sure you have Java 8+ and a [compatible Docker environment](https://www.testcontainers.org/supported_docker_environment/) installed.
@@ -29,10 +29,10 @@ Server: Docker Desktop 4.12.0 (85629)
 * Clone the repository
 [source,shell]
 ----
-git clone https://github.com/testcontainers/tc-guide-configuring-application-dependencies.git
-cd tc-guide-configuring-application-dependencies
+git clone https://github.com/testcontainers/tc-guide-configuration-of-services-running-in-container.git
+cd tc-guide-configuration-of-services-running-in-container
 ----
-* Open the **tc-guide-configuring-application-dependencies** project in your favorite IDE.
+* Open the **tc-guide-configuration-of-services-running-in-container** project in your favorite IDE.
 
 == 3. Run Tests
 The sample project uses JUnit tests and Testcontainers to run them against dependencies running in containers.

@@ -1,13 +1,13 @@
 ---
-title: "Configuring the application dependencies using Testcontainers"
+title: "Configuration of services running in a container"
 date: 2023-03-07T09:39:58+05:30
 draft: false
-description: This guide will explain how to configure the application dependencies for your tests using Testcontainers.
-repo: https://github.com/testcontainers/tc-guide-configuring-application-dependencies
+description: This guide will explain how to configure the services running in containers for your tests using Testcontainers.
+repo: https://github.com/testcontainers/tc-guide-configuration-of-services-running-in-container
 ---
 :toc:
 :toclevels: 2
-:codebase: https://raw.githubusercontent.com/testcontainers/tc-guide-configuring-application-dependencies/main
+:codebase: https://raw.githubusercontent.com/testcontainers/tc-guide-configuration-of-services-running-in-container/main
 
 In this guide you will learn how to
 
@@ -22,7 +22,7 @@ In this guide you will learn how to
 == What we are going to achieve in this guide
 We are going to use a Postgres container and create the database schema using SQL scripts
 by copying them into the container. Also, we are going to learn how we can initialize
-https://localstack.cloud/[Localstack] containers to create S3 buckets by executing commands inside the container.
+https://localstack.cloud/[LocalStack] containers to create S3 buckets by executing commands inside the container.
 
 == Getting Started
 Create a new Java project with the Maven or Gradle build tool and add the following dependencies.
@@ -44,16 +44,15 @@ dependencies {
 }
 ----
 
-For complete code please refer to the GitHub repository https://github.com/testcontainers/tc-guide-configuring-application-dependencies
+For complete code please refer to the GitHub repository https://github.com/testcontainers/tc-guide-configuration-of-services-running-in-container
 
-== Initializing the container by copying files into container
+== Initializing the container by copying files into it
 
-While using Testcontainers for testing, sometimes we need to initialize the containers with some files
-in a certain location.
+While using Testcontainers for testing, sometimes we need to initialize the container (or the application within the container)
+by placing files in a certain location within the container.
 
-For example, while using the Postgres database you may want to create the database schema using
-SQL scripts before running your tests. You can initialize the Postgres docker container by placing
-the SQL scripts in the */docker-entrypoint-initdb.d* directory.
+For example, while using the Postgres database you may want to create the database schema using SQL scripts before running your tests.
+You can initialize the Postgres database within the Docker container by placing the SQL scripts in the */docker-entrypoint-initdb.d* directory.
 
 Let us create a database schema creation SQL script *init-db.sql* in *src/test/resources* directory.
 
@@ -62,7 +61,7 @@ Let us create a database schema creation SQL script *init-db.sql* in *src/test/r
 include::{codebase}/src/test/resources/init-db.sql[]
 ----
 
-Now, let’s write a test using Testcontainers postgres module.
+Now, let’s write a test using the Testcontainers Postgres module.
 
 [source,java]
 ----
@@ -89,27 +88,13 @@ class CustomerServiceTest {
 }
 ----
 
-Here we have used *withCopyFileToContainer(MountableFile mountableFile, String containerPath)* method
-to copy *init-db.sql* file from classpath into container's */docker-entrypoint-initdb.d/* directory.
-Now when you try to run the test, Testcontainers API will spin up a Postgres docker container and
-the sql scripts copied into */docker-entrypoint-initdb.d/* directory will be executed automatically
-before running your tests and hence you can use those tables from your tests.
+Here we have used the *withCopyFileToContainer(MountableFile mountableFile, String containerPath)* method
+to copy the *init-db.sql* file from the classpath into  the */docker-entrypoint-initdb.d/* directory within.
+Now when you try to run the test, Testcontainers will spin up a Postgres Docker container with the SQL  scripts
+copied into */docker-entrypoint-initdb.d/* directory, where they will be executed automatically before running your tests.
+And so you can use those tables from your tests.
 
-We can even simplify copying files from classpath by using
-*withClasspathResourceMapping(String resourcePath, String containerPath, BindMode mode)* method as follows:
-
-[source,java]
-----
-static PostgreSQLContainer<?> postgres =
-       new PostgreSQLContainer<>("postgres:15.2-alpine")
-               .withClasspathResourceMapping(
-                       "init-db.sql",
-                       "/docker-entrypoint-initdb.d/",
-                       BindMode.READ_ONLY
-                );
-----
-
-We can also copy files from any host path using *MountableFile.forHostPath(String path)* as follows:
+We can also copy files from any path on the host using *MountableFile.forHostPath(String path)* as follows:
 
 [source,java]
 ----
@@ -121,23 +106,18 @@ static PostgreSQLContainer<?> postgres =
         );
 ----
 
-[WARNING]
-There is another way to mount files into containers by using *withFileSystemBind(String hostPath, String containerPath, BindMode mode)*.
-But using this approach is *NOT RECOMMENDED* and will not work in certain environments.
-
 == Initializing the container by executing commands inside container
 
-Some docker containers provide CLI tools to perform various actions by running commands.
+Some Docker containers provide CLI tools to perform various actions by running commands within the container.
 While using Testcontainers, we may want to perform some initialization tasks before running our tests.
 
-You can use *container.execInContainer(String... command)* API to run any supporting command inside
-a running container.
+You can use the *container.execInContainer(String... command)* API to run any available command inside a running container.
 
-For example, Testcontainers provides the Localstack module which can be used for testing
-AWS Service integrations. Suppose we are testing the scenario of a file upload into a S3 bucket.
+For example, Testcontainers provides the LocalStack module which can be used for testing AWS Service integrations.
+Let's suppose we are testing the scenario of a file upload into a S3 bucket.
 Here we may want to create the S3 bucket before running the tests.
 
-Let us see how we can use the Localstack module, create a S3 bucket using *execInContainer()* and
+Let us see how we can use the LocalStack module, create a S3 bucket using *execInContainer()* and
 assert that the bucket exists in your test.
 
 [source,java]
@@ -145,9 +125,9 @@ assert that the bucket exists in your test.
 include::{codebase}/src/test/java/com/testcontainers/demo/LocalStackTest.java[lines="23..48,55..76"]
 ----
 
-Here we have created a S3 bucket by running the command *"awslocal s3 mb s3://bucketName"*
-using *localStack.execInContainer(...)*. The *awslocal* is a command line tool provided as part of
-Localstack docker image. Similarly, you can run any arbitrary valid command inside the running container.
+Here we have created a S3 bucket by running the command *"awslocal s3 mb s3://bucketName"* via *localStack.execInContainer(...)*.
+*"awslocal"* is a command line tool provided as part of the LocalStack Docker image.
+Similarly, you can run any arbitrary valid command inside the running container.
 
 We can also run any command and get the output and exit code as follows:
 
@@ -162,8 +142,8 @@ assertEquals(0, exitCode);
 ----
 
 [NOTE]
-The *withClasspathResourceMapping(), withCopyFileToContainer(), execInContainer()* are inherited
-from *GenericContainer*. So these methods are available for all Testcontainers modules as well.
+The *withClasspathResourceMapping(), withCopyFileToContainer(), execInContainer()* methods are inherited from *GenericContainer*.
+So they are available for all Testcontainers modules extending *GenericContainer* as well.
 
 == Summary
 We have learned how we can configure the test dependency containers using Testcontainers by copying files
