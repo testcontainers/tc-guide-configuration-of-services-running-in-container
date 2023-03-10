@@ -4,6 +4,11 @@ date: 2023-03-07T09:39:58+05:30
 draft: false
 description: This guide will explain how to configure the services running in containers for your tests using Testcontainers.
 repo: https://github.com/testcontainers/tc-guide-configuration-of-services-running-in-container
+languages:
+  - Java
+tags:
+  - postgresql
+  - localstack
 ---
 :toc:
 :toclevels: 2
