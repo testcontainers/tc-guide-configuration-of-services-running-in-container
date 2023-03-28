@@ -158,7 +158,7 @@ help in setting up the containers in a desired state for our test scenarios.
 To learn more about Testcontainers visit http://testcontainers.com
 
 == Further Reading
-* https://testcontainers.com/guides/introducing-testcontainers/
-* https://www.testcontainers.org/quickstart/junit_5_quickstart/
-* https://www.testcontainers.org/modules/databases/postgres/
-* https://www.testcontainers.org/modules/localstack/
+* https://testcontainers.com/guides/getting-started-with-testcontainers-for-java/[Getting started with Testcontainers for Java]
+* https://www.testcontainers.org/quickstart/junit_5_quickstart/[Testcontainers JUnit 5 QuickStart]
+* https://www.testcontainers.org/modules/databases/postgres/[Testcontainers Postgres Module]
+* https://www.testcontainers.org/modules/localstack/[Testcontainers LocalStack Module]
