@@ -16,7 +16,7 @@
         <junit.version>5.9.2</junit.version>
         <testcontainers.version>1.17.6</testcontainers.version>
         <aws.java.sdk.v2.version>2.18.16</aws.java.sdk.v2.version>
-        <aws.java.sdk.v1.version>1.11.1000</aws.java.sdk.v1.version>
+        <aws.java.sdk.v1.version>1.12.436</aws.java.sdk.v1.version>
     </properties>
 
     <dependencies>
