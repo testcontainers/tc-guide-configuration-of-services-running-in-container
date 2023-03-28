@@ -27,7 +27,7 @@ dependencies {
     testImplementation(enforcedPlatform("org.junit:junit-bom:${junit5Version}"))
     testImplementation(enforcedPlatform("org.testcontainers:testcontainers-bom:${testcontainersVersion}"))
 
-    implementation "org.postgresql:postgresql:42.5.0"
+    implementation "org.postgresql:postgresql:42.6.0"
     implementation "ch.qos.logback:logback-classic:1.4.5"
 
     testImplementation "software.amazon.awssdk:s3:${awsJavaSdkV2Version}"
