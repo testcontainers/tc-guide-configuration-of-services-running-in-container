@@ -35,13 +35,13 @@ Create a new Java project with the Maven or Gradle build tool and add the follow
 [source,groovy]
 ----
 dependencies {
-   implementation "org.postgresql:postgresql:42.5.0"
-   implementation "ch.qos.logback:logback-classic:1.4.5"
+   implementation "org.postgresql:postgresql:42.6.0"
+   implementation "ch.qos.logback:logback-classic:1.4.6"
 
    testImplementation(platform("org.testcontainers:testcontainers-bom:1.17.6"))
-   testImplementation "software.amazon.awssdk:s3:2.18.16"
+   testImplementation "software.amazon.awssdk:s3:2.20.33"
    // Reason for including AWS Java SDK V1: https://github.com/testcontainers/testcontainers-java/issues/1442
-   testImplementation "com.amazonaws:aws-java-sdk-s3:1.11.100"
+   testImplementation "com.amazonaws:aws-java-sdk-s3:1.12.436"
    testImplementation "org.junit.jupiter:junit-jupiter"
    testImplementation "org.testcontainers:junit-jupiter"
    testImplementation "org.testcontainers:postgresql"

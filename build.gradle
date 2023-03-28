@@ -19,16 +19,16 @@ repositories {
 ext {
     set("junit5Version", "5.9.2")
     set("testcontainersVersion", "1.17.6")
-    set("awsJavaSdkV1Version", "1.11.100")
-    set("awsJavaSdkV2Version", "2.18.16")
+    set("awsJavaSdkV1Version", "1.12.436")
+    set("awsJavaSdkV2Version", "2.20.33")
 }
 
 dependencies {
     testImplementation(enforcedPlatform("org.junit:junit-bom:${junit5Version}"))
     testImplementation(enforcedPlatform("org.testcontainers:testcontainers-bom:${testcontainersVersion}"))
 
-    implementation "org.postgresql:postgresql:42.5.0"
-    implementation "ch.qos.logback:logback-classic:1.4.5"
+    implementation "org.postgresql:postgresql:42.6.0"
+    implementation "ch.qos.logback:logback-classic:1.4.6"
 
     testImplementation "software.amazon.awssdk:s3:${awsJavaSdkV2Version}"
     testImplementation "com.amazonaws:aws-java-sdk-s3:${awsJavaSdkV1Version}"
