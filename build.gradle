@@ -28,7 +28,7 @@ dependencies {
     testImplementation(enforcedPlatform("org.testcontainers:testcontainers-bom:${testcontainersVersion}"))
 
     implementation "org.postgresql:postgresql:42.5.0"
-    implementation "ch.qos.logback:logback-classic:1.4.5"
+    implementation "ch.qos.logback:logback-classic:1.4.6"
 
     testImplementation "software.amazon.awssdk:s3:${awsJavaSdkV2Version}"
     testImplementation "com.amazonaws:aws-java-sdk-s3:${awsJavaSdkV1Version}"
