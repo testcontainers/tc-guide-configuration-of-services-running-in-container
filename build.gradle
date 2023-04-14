@@ -18,9 +18,9 @@ repositories {
 
 ext {
     set("junit5Version", "5.9.2")
-    set("testcontainersVersion", "1.17.6")
-    set("awsJavaSdkV1Version", "1.12.436")
-    set("awsJavaSdkV2Version", "2.20.33")
+    set("testcontainersVersion", "1.18.0")
+    set("awsJavaSdkV1Version", "1.12.445")
+    set("awsJavaSdkV2Version", "2.20.42")
 }
 
 dependencies {

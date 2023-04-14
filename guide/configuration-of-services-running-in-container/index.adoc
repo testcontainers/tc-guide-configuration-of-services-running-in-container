@@ -38,10 +38,10 @@ dependencies {
    implementation "org.postgresql:postgresql:42.6.0"
    implementation "ch.qos.logback:logback-classic:1.4.6"
 
-   testImplementation(platform("org.testcontainers:testcontainers-bom:1.17.6"))
-   testImplementation "software.amazon.awssdk:s3:2.20.33"
+   testImplementation(platform("org.testcontainers:testcontainers-bom:1.18.0"))
+   testImplementation "software.amazon.awssdk:s3:2.20.42"
    // Reason for including AWS Java SDK V1: https://github.com/testcontainers/testcontainers-java/issues/1442
-   testImplementation "com.amazonaws:aws-java-sdk-s3:1.12.436"
+   testImplementation "com.amazonaws:aws-java-sdk-s3:1.12.445"
    testImplementation "org.junit.jupiter:junit-jupiter"
    testImplementation "org.testcontainers:junit-jupiter"
    testImplementation "org.testcontainers:postgresql"
@@ -127,7 +127,7 @@ assert that the bucket exists in your test.
 
 [source,java]
 ----
-include::{codebase}/src/test/java/com/testcontainers/demo/LocalStackTest.java[lines="23..48,55..76"]
+include::{codebase}/src/test/java/com/testcontainers/demo/LocalStackTest.java[lines="22..45,58..79"]
 ----
 
 Here we have created a S3 bucket by running the command *"awslocal s3 mb s3://bucketName"* via *localStack.execInContainer(...)*.
