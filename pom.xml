@@ -14,7 +14,7 @@
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
         <junit.version>5.9.2</junit.version>
-        <testcontainers.version>1.18.0</testcontainers.version>
+        <testcontainers.version>1.18.3</testcontainers.version>
         <aws.java.sdk.v2.version>2.20.42</aws.java.sdk.v2.version>
         <aws.java.sdk.v1.version>1.12.445</aws.java.sdk.v1.version>
     </properties>
