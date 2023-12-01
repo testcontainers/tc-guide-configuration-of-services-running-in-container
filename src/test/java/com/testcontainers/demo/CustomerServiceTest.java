@@ -15,7 +15,7 @@ class CustomerServiceTest {
 
   @Container
   static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>(
-    "postgres:15.2-alpine"
+    "postgres:16-alpine"
   )
     .withCopyFileToContainer(
       MountableFile.forClasspathResource("init-db.sql"),
@@ -27,11 +27,11 @@ class CustomerServiceTest {
   @BeforeEach
   void setUp() {
     customerService =
-      new CustomerService(
-        postgres.getJdbcUrl(),
-        postgres.getUsername(),
-        postgres.getPassword()
-      );
+    new CustomerService(
+      postgres.getJdbcUrl(),
+      postgres.getUsername(),
+      postgres.getPassword()
+    );
   }
 
   @Test

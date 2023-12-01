@@ -31,7 +31,7 @@ class LocalStackTest {
 
   @Container
   static LocalStackContainer localStack = new LocalStackContainer(
-    DockerImageName.parse("localstack/localstack:1.4")
+    DockerImageName.parse("localstack/localstack:3.0")
   )
     .withServices(S3);
 
@@ -44,11 +44,8 @@ class LocalStackTest {
 
     localStack.execInContainer("awslocal", "s3", "mb", "s3://" + bucketName);
 
-    org.testcontainers.containers.Container.ExecResult execResult = localStack.execInContainer(
-      "awslocal",
-      "s3",
-      "ls"
-    );
+    org.testcontainers.containers.Container.ExecResult execResult =
+      localStack.execInContainer("awslocal", "s3", "ls");
     String stdout = execResult.getStdout();
     int exitCode = execResult.getExitCode();
     assertTrue(stdout.contains(bucketName));
@@ -57,9 +54,10 @@ class LocalStackTest {
 
   @Test
   void shouldListBuckets() {
-    StaticCredentialsProvider credentialsProvider = StaticCredentialsProvider.create(
-      AwsBasicCredentials.create(accessKey, secretKey)
-    );
+    StaticCredentialsProvider credentialsProvider =
+      StaticCredentialsProvider.create(
+        AwsBasicCredentials.create(accessKey, secretKey)
+      );
     S3Client s3 = S3Client
       .builder()
       .endpointOverride(s3Endpoint)

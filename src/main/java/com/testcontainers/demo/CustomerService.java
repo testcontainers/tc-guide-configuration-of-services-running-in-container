@@ -37,7 +37,9 @@ public class CustomerService {
     List<Customer> customers = new ArrayList<>();
 
     try (Connection conn = this.getConnection()) {
-      PreparedStatement pstmt = conn.prepareStatement("select id,name from customers");
+      PreparedStatement pstmt = conn.prepareStatement(
+        "select id,name from customers"
+      );
       ResultSet rs = pstmt.executeQuery();
       while (rs.next()) {
         long id = rs.getLong("id");

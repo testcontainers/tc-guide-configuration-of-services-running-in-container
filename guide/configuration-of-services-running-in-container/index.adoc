@@ -36,9 +36,9 @@ Create a new Java project with the Maven or Gradle build tool and add the follow
 ----
 dependencies {
    implementation "org.postgresql:postgresql:42.6.0"
-   implementation "ch.qos.logback:logback-classic:1.4.6"
+   implementation "ch.qos.logback:logback-classic:1.4.8"
 
-   testImplementation(platform("org.testcontainers:testcontainers-bom:1.18.0"))
+   testImplementation(platform("org.testcontainers:testcontainers-bom:1.19.3"))
    testImplementation "software.amazon.awssdk:s3:2.20.42"
    // Reason for including AWS Java SDK V1: https://github.com/testcontainers/testcontainers-java/issues/1442
    testImplementation "com.amazonaws:aws-java-sdk-s3:1.12.445"
@@ -80,7 +80,7 @@ class CustomerServiceTest {
 
    @Container
    static PostgreSQLContainer<?> postgres =
-           new PostgreSQLContainer<>("postgres:15.2-alpine")
+           new PostgreSQLContainer<>("postgres:16-alpine")
                 .withCopyFileToContainer(
                     MountableFile.forClasspathResource(
                         "init-db.sql"), "/docker-entrypoint-initdb.d/"
@@ -104,7 +104,7 @@ We can also copy files from any path on the host using *MountableFile.forHostPat
 [source,java]
 ----
 static PostgreSQLContainer<?> postgres =
-       new PostgreSQLContainer<>("postgres:15.2-alpine")
+       new PostgreSQLContainer<>("postgres:16-alpine")
         .withCopyFileToContainer(
                 MountableFile.forHostPath("/host/path/to/init-db.sql"),
                 "/docker-entrypoint-initdb.d/"
@@ -127,7 +127,7 @@ assert that the bucket exists in your test.
 
 [source,java]
 ----
-include::{codebase}/src/test/java/com/testcontainers/demo/LocalStackTest.java[lines="22..45,58..79"]
+include::{codebase}/src/test/java/com/testcontainers/demo/LocalStackTest.java[lines="22..46,53..78"]
 ----
 
 Here we have created a S3 bucket by running the command *"awslocal s3 mb s3://bucketName"* via *localStack.execInContainer(...)*.
