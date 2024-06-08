@@ -35,13 +35,13 @@ Create a new Java project with the Maven or Gradle build tool and add the follow
 [source,groovy]
 ----
 dependencies {
-   implementation "org.postgresql:postgresql:42.6.0"
-   implementation "ch.qos.logback:logback-classic:1.4.8"
+   implementation "org.postgresql:postgresql:42.7.3"
+   implementation "ch.qos.logback:logback-classic:1.5.6"
 
-   testImplementation(platform("org.testcontainers:testcontainers-bom:1.19.3"))
-   testImplementation "software.amazon.awssdk:s3:2.20.42"
+   testImplementation(platform("org.testcontainers:testcontainers-bom:1.19.8"))
+   testImplementation "software.amazon.awssdk:s3:2.21.46"
    // Reason for including AWS Java SDK V1: https://github.com/testcontainers/testcontainers-java/issues/1442
-   testImplementation "com.amazonaws:aws-java-sdk-s3:1.12.445"
+   testImplementation "com.amazonaws:aws-java-sdk-s3:1.12.461"
    testImplementation "org.junit.jupiter:junit-jupiter"
    testImplementation "org.testcontainers:junit-jupiter"
    testImplementation "org.testcontainers:postgresql"
@@ -127,7 +127,7 @@ assert that the bucket exists in your test.
 
 [source,java]
 ----
-include::{codebase}/src/test/java/com/testcontainers/demo/LocalStackTest.java[lines="22..46,53..78"]
+include::{codebase}/src/test/java/com/testcontainers/demo/LocalStackTest.java[lines="22..45,54..77"]
 ----
 
 Here we have created a S3 bucket by running the command *"awslocal s3 mb s3://bucketName"* via *localStack.execInContainer(...)*.

@@ -1,6 +1,6 @@
 plugins {
     id "java"
-    id 'com.diffplug.spotless' version "6.23.0"
+    id 'com.diffplug.spotless' version "6.25.0"
 }
 
 group = "com.testcontainers"
@@ -18,18 +18,18 @@ repositories {
 }
 
 ext {
-    set("junit5Version", "5.10.0")
-    set("testcontainersVersion", "1.19.3")
-    set("awsJavaSdkV1Version", "1.12.445")
-    set("awsJavaSdkV2Version", "2.20.42")
+    set("junit5Version", "5.10.2")
+    set("testcontainersVersion", "1.19.8")
+    set("awsJavaSdkV1Version", "1.12.461")
+    set("awsJavaSdkV2Version", "2.21.46")
 }
 
 dependencies {
     testImplementation(enforcedPlatform("org.junit:junit-bom:${junit5Version}"))
     testImplementation(enforcedPlatform("org.testcontainers:testcontainers-bom:${testcontainersVersion}"))
 
-    implementation "org.postgresql:postgresql:42.6.0"
-    implementation "ch.qos.logback:logback-classic:1.4.8"
+    implementation "org.postgresql:postgresql:42.7.3"
+    implementation "ch.qos.logback:logback-classic:1.5.6"
 
     testImplementation "software.amazon.awssdk:s3:${awsJavaSdkV2Version}"
     testImplementation "com.amazonaws:aws-java-sdk-s3:${awsJavaSdkV1Version}"
