@@ -31,9 +31,8 @@ class LocalStackTest {
 
   @Container
   static LocalStackContainer localStack = new LocalStackContainer(
-    DockerImageName.parse("localstack/localstack:3.0")
-  )
-    .withServices(S3);
+    DockerImageName.parse("localstack/localstack:3.4.0")
+  );
 
   @BeforeAll
   static void beforeAll() throws IOException, InterruptedException {
